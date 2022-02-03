@@ -75,9 +75,10 @@
             let comments = response["comments"];
             console.log(comments);
             comments.sort((a, b) => Number(b.commentId) - Number(a.commentId));
+            console.log(comments)
             for (let i = 0; i < comments.length; i++) {
-              let content = comments["content"];
-              let nickname = comments["nickname"];
+              let content = comments[i]["content"];
+              let nickname = comments[i]["nickname"];
               let temp_html = ` <div class="commentsarea">
                                       <div class="form-group">
                                       <label>작성자</label>
@@ -116,7 +117,7 @@
       }
     </script>
     <div id="post_detail"></div>
-    <div id="commentsarea">
+    <div id="comments">
       <div>
         <div class="form-floating">
           <input

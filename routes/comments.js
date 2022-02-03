@@ -6,8 +6,9 @@ const router = express.Router();
 
 //댓글 조회
 router.get ("/comments/:postId", async (req, res) => {
-    const {postId} = req.query;
-    const comments = await Comments.find({postId:postId});
+    const {postId} = req.params;
+    console.log(postId)
+    const comments = await Comments.find({postId});
     res.json({
         comments,
     });
