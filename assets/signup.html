@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멋쟁이게시판!! | 회원가입 😎</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    </title>
+</head>
+<body>
+    <script>
+        	if (localStorage.getItem("token")) {
+				  getSelf(function () {
+					alert("로그인이 이미 완료되었습니다. 메인페이지로 이동할게요!");
+					window.location.replace("/");
+				  });
+				}
+        function signUp() {
+            $.ajax({
+                type: "POST",
+                url: "/api/users",
+                data: {
+                    nickname: $('#nickname').val(),
+                    password: $('#password').val(), 
+                    confirmPassword: $('#confirmPassword').val(),
+                },  
+                success: function (response) {
+                    if(response["result"] == "success") {
+                        alert(response['msg']);
+                        window.location.href = "/";
+                    } else {
+                        alert(response['errorMessage']);
+                    }                   
+                },
+            });
+        }
+
+    </script>
+    <div>
+            <div class="form-group">
+            <label>닉네임</label>
+            <input type="text" class="form-control" id="nickname"}>
+            </div>
+            <div class="form-group">
+            <label>비밀번호</label>
+            <input type="password" class="form-control" id= "password">
+            </div>
+            <div class="form-group">
+            <label>비밀번호 확인</label>
+            <input type="password" class="form-control" id= "confirmPassword">
+            </div>
+            <button class="btn btn-primary" onclick="signUp()">회원가입</button><button class="btn btn-primary" onclick="location.href='/signin.html'" style="margin-left: 80%;">로그인 화면으로 이동</button>
+    </div>
+</body>
+</html>

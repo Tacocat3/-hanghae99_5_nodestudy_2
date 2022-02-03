@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멋쟁이게시판!! | 게시글 수정하기 😎</title>
+    <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+            integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <script>
+        let params = new URLSearchParams(location.search)
+        let postId = params.get('postId')
+        $(document).ready(function () {
+        modifyDetailpage(postId);
+    });
+        // 글 수정 불러오기
+        function modifyDetailpage(postId) {
+
+$.ajax({
+    type: "GET",
+    url: "/api/articles/" + postId,
+    headers: {
+     "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    data: {},
+    success: function (response) {
+        let modify_detail = response["articles"];
+
+        let subject = modify_detail["subject"];
+        let content = modify_detail["content"];
+        
+
+        $('#subject').val(subject);
+        $('#content').val(content);
+
+        let temp_html = `<div id="detailpage">
+<div class="form-group">
+<label>제목</label>
+<input type="text" class="form-control" id="subject" value="${subject}">
+</div>
+<div class="form-group">
+<label>작성내용</label>
+<input type="text" class="form-control" id= "content" value="${content}">
+</div>
+<button type="submit" class="btn btn-primary" onclick="confirmDetailpage(${postId});">수정완료<button type="submit" class="btn btn-primary" style="margin-left:10px;" onclick="removepost(${postId});">삭제하기</button></button>
+
+</div>`;
+        $("#modify_detail").append(temp_html);
+
+
+    }
+})
+}
+        //게시글 수정
+        function confirmDetailpage (postId) {
+            $.ajax({
+    type: "PUT",
+    url: "/api/articles/"+postId+"/modify",
+    headers: {
+    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+        data: {
+            subject: $('#subject').val(),
+            content: $('#content').val(),
+            },
+            success: function (response) {
+                if (response["result"] == "success") {
+                    alert(response['msg']);
+                        window.location.href = "/";
+                    } else {
+                        alert(response['msg'])
+                    }
+                }
+              });
+            }
+
+            //게시글 삭제
+            function removepost (postId) {
+                $.ajax({
+                type: "DELETE",
+                url: "/api/articles/"+postId,
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                },
+                data: {},
+                success: function (response) {
+                    if (response["result"] == "success") {
+                    alert(response['msg']);
+                        window.location.href = "/";
+                    } else {
+                        alert(response['msg'])
+                    }
+                }
+              });
+            }
+    </script>
+    <div id="modify_detail">
+    </div>
+    </body>
+</html>

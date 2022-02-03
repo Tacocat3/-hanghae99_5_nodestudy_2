@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멋쟁이게시판!! | 전체 게시글 😆</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+          .bigname {
+        font-size: 40px;
+        text-align: center;
+          }
+    </style>
+</head>
+<body>
+    <script>
+                $(document).ready(function () {
+                showArticles();
+                        });
+            
+
+                function showArticles() {
+                    $.ajax ({
+                        type: "GET",
+                        url: "/api/articles",
+                        data: {},
+                        success: function (response) {
+                            let posts = response["articles"];
+                            posts.sort((a, b) => Number(b.postId) - Number(a.postId))
+                            for (let i = 0; i < posts.length; i++){
+                                let postId = posts[i]["postId"];
+                                let subject = posts[i]["subject"];
+                                let nickname = posts[i]['nickname'];
+                                let temp_html = `<nav class="level">
+        <p style="margin-left:5%">
+            <button class="button is-dark">${postId}</button>
+        </p>
+            <p class="level-item has-text-centered" onclick="location.href='/detail.html?postId=${postId}'">
+                <a>${subject}</a>
+              </p>
+                <p class="level-item has-text-centered">
+                    <p style="padding-right: 50px;">${nickname}</p>
+                </p>
+    </nav>`
+    $("#posts").append(temp_html);
+                            }
+                        },
+                    });
+                }
+
+    </script>
+    <div class="bigname">
+        <button class="button is-success" style="margin: 10px" onclick="location.href='/signin.html'">로그인/회원가입</button> <text>전체 글 목록😎</text> <button class="button is-success" id="newpostbtn" style="margin: 10px" onclick="location.href='/newpost.html'">새 포스트</button>
+    </div>
+</body>
+<div id="posts"></div>
+</html>

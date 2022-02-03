@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>멋쟁이게시판!! | 로그인 😎</title>
+    <link rel="stylesheet"
+             href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+             integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <script>
+      	if (localStorage.getItem("token")) {
+				  getSelf(function () {
+					alert("로그인이 이미 완료되었습니다. 메인페이지로 이동할게요!");
+					window.location.replace("/");
+				  });
+				}
+
+        function signIn () {
+            $.ajax({
+            type: "POST",
+                url: "/api/auth",
+                data: {
+                    nickname: $('#nickname').val(),
+                    password: $('#password').val(), 
+          },
+          success: function (response) {
+            if(response["result"] == "success") {
+            localStorage.setItem("token", response.token);
+            window.location.replace("/articles.html");
+          } else {
+            alert(response['errorMessage']);
+          }
+          },
+        });
+      }
+    </script>
+    <div>
+        <div class="form-group">
+            <label>닉네임</label>
+            <input type="text" class="form-control" id="nickname">
+            </div>
+            <div class="form-group">
+            <label>비밀번호</label>
+            <input type="password" class="form-control" id= "password">
+            </div>
+            <button class="btn btn-primary" onclick="signIn()">로그인하기</button><button class="btn btn-primary" onclick="location.href='/signup.html'" style="margin-left: 80%;">회원가입</button>
+    </div>
+</body>
+</html>

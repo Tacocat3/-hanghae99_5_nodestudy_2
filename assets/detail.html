@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+      .detailpage {
+        width: auto;
+        display: block;
+        margin-left: 50%;
+        padding-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+
+      $(document).ready(function () {
+        let params = new URLSearchParams(location.search)
+        let postId = params.get('postId')
+//        let postId = document.location.href.split("=")[1];
+        showDetailpage(postId);
+        showComments(postId);
+      });
+
+      let postId = document.location.href.split("=")[1];
+      //상세 페이지
+      function showDetailpage(postId) {
+        $.ajax({
+          type: "GET",
+          url: "/api/articles/" + postId,
+          data: {},
+          success: function (response) {
+            let post_detail = response["articles"];
+            let postId = post_detail["postId"];
+            let subject = post_detail["subject"];
+            let nickname = post_detail["nickname"];
+            let content = post_detail["content"];
+            let temp_html = ` <div class="detailpage">
+                                    <div class="form-group">
+                                      <label>제목</label>
+                                      <p>${subject}</p>
+                                    </div>
+                                    <div class="form-group">
+                                      <label>작성자</label>
+                                      <p>${nickname}</p>
+                                    </div>
+                                    <div class="form-group">
+                                      <label>작성내용</label>
+                                      <p>${content}</p>
+                                    </div>
+                                    <button class="btn btn-primary" onclick="location.href='/postmodify.html?postId=${postId}'" >수정/삭제하기</button>
+                                  </div>`;
+            $("#post_detail").append(temp_html);
+          },
+        });
+      }
+      // 댓글 조회
+
+      function showComments(postId) {
+    //    let postId = document.location.href.split("=")[1];
+
+        $.ajax({
+          type: "GET",
+          url: "/api/comments/" + postId,
+          data: {},
+          success: function (response) {
+            let comments = response["comments"];
+            console.log(comments);
+            comments.sort((a, b) => Number(b.commentId) - Number(a.commentId));
+            for (let i = 0; i < comments.length; i++) {
+              let content = comments["content"];
+              let nickname = comments["nickname"];
+              let temp_html = ` <div class="commentsarea">
+                                      <div class="form-group">
+                                      <label>작성자</label>
+                                      <p>${nickname}</p>
+                                      </div>
+                                      <div class="form-group">
+                                      <label>작성내용</label>
+                                      <p>${content}</p>
+                                      </div>
+                                      </div>`;
+              $("#comments").append(temp_html);
+            }
+          },
+        });
+      }
+      // 댓글 생성
+      function postComments() {
+        $.ajax({
+          type: "POST",
+          url: "api/comments",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          data: {
+            content: $("#content").val(),
+            postId: postId,
+          },
+          success: function (response) {
+            if (response["result"] == "success") {
+              alert("댓글이 등록되었습니다! 😎");
+            } else {
+              alert(response["errorMessage"]);
+            }
+          },
+        });
+      }
+    </script>
+    <div id="post_detail"></div>
+    <div id="commentsarea">
+      <div>
+        <div class="form-floating">
+          <input
+            type="text"
+            class="form-control"
+            id="content"
+            placeholder="댓글 남기기😏"
+          /><button type="button" onclick="postComments()" class="btn btn-info">
+            저장
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
